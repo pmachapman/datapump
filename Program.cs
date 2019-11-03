@@ -29,23 +29,40 @@ namespace Conglomo.DataPump
                 || !args.Any()
                 || args.FirstOrDefault() == "/?"
                 || args.FirstOrDefault() == "-?"
-                 || args.FirstOrDefault()?.ToUpperInvariant() == "-H"
-                 || args.FirstOrDefault()?.ToUpperInvariant() == "--HELP")
+                || args.FirstOrDefault()?.ToUpperInvariant() == "-H"
+                || args.FirstOrDefault()?.ToUpperInvariant() == "--HELP")
             {
                 DisplayHelp();
                 return 0;
             }
 
             // Parse the command line arguments
-            if (args.Length == 3 || args.Length == 4)
+            PumpConfiguration configuration = new PumpConfiguration();
+            configuration.ParseArguments(args);
+            if (configuration.IsValid())
             {
-            }
+                try
+                {
+                    Pump.Execute(configuration);
+                }
+                catch (ArgumentException ex)
+                {
+                    DisplayHelp();
+                    Console.WriteLine();
+                    Console.WriteLine(ex.ToString());
+                    return 1;
+                }
 
-            // Default to an error
-            DisplayHelp();
-            Console.WriteLine();
-            Console.WriteLine(Properties.Resources.InvalidArguments);
-            return 1;
+                return 0;
+            }
+            else
+            {
+                // Default to an error
+                DisplayHelp();
+                Console.WriteLine();
+                Console.WriteLine(Properties.Resources.InvalidArguments);
+                return 1;
+            }
         }
 
         /// <summary>
@@ -91,6 +108,7 @@ namespace Conglomo.DataPump
                 }
 
                 // Display usage
+                Console.WriteLine();
                 Console.WriteLine(Properties.Resources.UsageText);
             }
         }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Conglomo.DataPump": {
+      "commandName": "Project",
+      "commandLineArgs": "/?"
+    }
+  }
+}

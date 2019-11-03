@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DataPump</name>
+    </assembly>
+    <members>
+        <member name="T:Conglomo.DataPump.Program">
+            <summary>
+            The main program.
+            </summary>
+        </member>
+        <member name="M:Conglomo.DataPump.Program.Main(System.String[])">
+            <summary>
+            Defines the entry point of the application.
+            </summary>
+            <param name="args">The arguments.</param>
+        </member>
+        <member name="T:Conglomo.DataPump.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Conglomo.DataPump.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Conglomo.DataPump.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Conglomo.DataPump.Properties.Resources.GASPUMP">
+            <summary>
+              Looks up a localized resource of type System.Byte[].
+            </summary>
+        </member>
+        <member name="P:Conglomo.DataPump.Properties.Resources.UsageText">
+            <summary>
+              Looks up a localized string similar to Usage: DATAPUMP.EXE [database type] [connection string] [sql file] [output file].
+            </summary>
+        </member>
+    </members>
+</doc>

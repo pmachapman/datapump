@@ -121,6 +121,10 @@
   <data name="GASPUMP" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GASPUMP.ICO;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="InvalidArguments" xml:space="preserve">
+    <value>Invalid command line arguments.</value>
+    <comment>Displayed on error</comment>
+  </data>
   <data name="UsageText" xml:space="preserve">
     <value>Usage: DATAPUMP.EXE [database type] [connection string] [sql file] [output file]</value>
     <comment>Displayed in the help text</comment>

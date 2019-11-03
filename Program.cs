@@ -7,6 +7,7 @@
 namespace Conglomo.DataPump
 {
     using System;
+    using System.Globalization;
     using System.Linq;
     using System.Reflection;
 
@@ -19,14 +20,32 @@ namespace Conglomo.DataPump
         /// Defines the entry point of the application.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        public static void Main(string[] args)
+        /// <returns>
+        /// The error code.
+        /// </returns>
+        public static int Main(string[] args)
         {
-            if (args != default && args.FirstOrDefault() == "/?")
+            if (args == default
+                || !args.Any()
+                || args.FirstOrDefault() == "/?"
+                || args.FirstOrDefault() == "-?"
+                 || args.FirstOrDefault()?.ToUpperInvariant() == "-H"
+                 || args.FirstOrDefault()?.ToUpperInvariant() == "--HELP")
             {
                 DisplayHelp();
+                return 0;
             }
 
             // Parse the command line arguments
+            if (args.Length == 3 || args.Length == 4)
+            {
+            }
+
+            // Default to an error
+            DisplayHelp();
+            Console.WriteLine();
+            Console.WriteLine(Properties.Resources.InvalidArguments);
+            return 1;
         }
 
         /// <summary>
@@ -42,16 +61,26 @@ namespace Conglomo.DataPump
                 if (attributes.Any())
                 {
                     string productName = ((AssemblyProductAttribute)attributes.First()).Product;
-                    attributes = assembly.GetCustomAttributes(typeof(AssemblyVersionAttribute), false);
+                    string version = string.Empty;
+                    attributes = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
                     if (attributes.Any())
                     {
-                        string version = ((AssemblyVersionAttribute)attributes.First()).Version;
-                        Console.WriteLine(productName + " " + version);
+                        Version ver = new Version(((AssemblyFileVersionAttribute)attributes.First()).Version);
+                        version = ver.Major.ToString(CultureInfo.InvariantCulture) + "." + ver.Minor.ToString(CultureInfo.InvariantCulture);
+                        if (ver.Build > 0)
+                        {
+                            version += "." + ver.Build.ToString(CultureInfo.InvariantCulture);
+                        }
                     }
-                    else
+
+                    string companyName = string.Empty;
+                    attributes = assembly.GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+                    if (attributes.Any())
                     {
-                        Console.WriteLine(productName);
+                        companyName = ((AssemblyCompanyAttribute)attributes.First()).Company;
                     }
+
+                    Console.WriteLine((companyName + " " + productName + " " + version).Trim());
                 }
 
                 // Display the copyright message
@@ -63,8 +92,6 @@ namespace Conglomo.DataPump
 
                 // Display usage
                 Console.WriteLine(Properties.Resources.UsageText);
-
-                return;
             }
         }
     }

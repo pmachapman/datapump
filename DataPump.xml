@@ -4,6 +4,21 @@
         <name>DataPump</name>
     </assembly>
     <members>
+        <member name="T:Conglomo.DataPump.Database">
+            <summary>
+            The database type.
+            </summary>
+        </member>
+        <member name="F:Conglomo.DataPump.Database.None">
+            <summary>
+            No database selected
+            </summary>
+        </member>
+        <member name="F:Conglomo.DataPump.Database.Firebird">
+            <summary>
+            The Firebird database.
+            </summary>
+        </member>
         <member name="T:Conglomo.DataPump.Program">
             <summary>
             The main program.
@@ -14,6 +29,14 @@
             Defines the entry point of the application.
             </summary>
             <param name="args">The arguments.</param>
+            <returns>
+            The error code.
+            </returns>
+        </member>
+        <member name="M:Conglomo.DataPump.Program.DisplayHelp">
+            <summary>
+            Displays the help text.
+            </summary>
         </member>
         <member name="T:Conglomo.DataPump.Properties.Resources">
             <summary>
@@ -34,6 +57,11 @@
         <member name="P:Conglomo.DataPump.Properties.Resources.GASPUMP">
             <summary>
               Looks up a localized resource of type System.Byte[].
+            </summary>
+        </member>
+        <member name="P:Conglomo.DataPump.Properties.Resources.InvalidArguments">
+            <summary>
+              Looks up a localized string similar to Invalid command line arguments..
             </summary>
         </member>
         <member name="P:Conglomo.DataPump.Properties.Resources.UsageText">

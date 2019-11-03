@@ -11,6 +11,8 @@
     <AssemblyName>DataPump</AssemblyName>
     <ApplicationIcon>Resources\GASPUMP.ICO</ApplicationIcon>
     <StartupObject>Conglomo.DataPump.Program</StartupObject>
+    <NeutralLanguage>en-NZ</NeutralLanguage>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

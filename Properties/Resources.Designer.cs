@@ -71,6 +71,15 @@ namespace Conglomo.DataPump.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid command line arguments..
+        /// </summary>
+        internal static string InvalidArguments {
+            get {
+                return ResourceManager.GetString("InvalidArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Usage: DATAPUMP.EXE [database type] [connection string] [sql file] [output file].
         /// </summary>
         internal static string UsageText {

@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>D:\source\repos\Conglomo.DataPump\DataPump.xml</DocumentationFile>
+    <DocumentationFile>D:\source\repos\Conglomo.DataPump\bin\DataPump.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

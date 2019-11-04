@@ -45,7 +45,8 @@ namespace Conglomo.DataPump
                                 // We only support CSV files at present
                                 configuration.OutputFile = arg;
                             }
-                            else if (arg.EndsWith(".gdb", StringComparison.OrdinalIgnoreCase))
+                            else if (arg.Contains(".gdb", StringComparison.OrdinalIgnoreCase)
+                                    || arg.Contains(".fdb", StringComparison.OrdinalIgnoreCase))
                             {
                                 // Firebird connection string
                                 configuration.Database = Database.Firebird;

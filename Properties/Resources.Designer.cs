@@ -80,11 +80,20 @@ namespace Conglomo.DataPump.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid data pump configuration.
+        ///   Looks up a localized string similar to Invalid data pump configuration..
         /// </summary>
         internal static string InvalidConfiguration {
             get {
                 return ResourceManager.GetString("InvalidConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data pump failed to execute..
+        /// </summary>
+        internal static string PumpFailure {
+            get {
+                return ResourceManager.GetString("PumpFailure", resourceCulture);
             }
         }
         

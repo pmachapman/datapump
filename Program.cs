@@ -10,6 +10,7 @@ namespace Conglomo.DataPump
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// The main program.
@@ -23,7 +24,7 @@ namespace Conglomo.DataPump
         /// <returns>
         /// The error code.
         /// </returns>
-        public static int Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
             if (args == default
                 || !args.Any()
@@ -43,7 +44,7 @@ namespace Conglomo.DataPump
             {
                 try
                 {
-                    Pump.Execute(configuration);
+                    await Pump.ExecuteAsync(configuration).ConfigureAwait(false);
                 }
                 catch (ArgumentException ex)
                 {

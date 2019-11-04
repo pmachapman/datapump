@@ -81,11 +81,11 @@ namespace Conglomo.DataPump
                     {
                         if (arg != default)
                         {
-                            if (Enum.IsDefined(typeof(Database), arg) && Enum.TryParse(arg, out Database database))
+                            if (Enum.TryParse(arg, true, out Database database))
                             {
                                 configuration.Database = database;
                             }
-                            else if (Enum.IsDefined(typeof(FileType), arg) && Enum.TryParse(arg, out FileType fileType))
+                            else if (Enum.TryParse(arg, true, out FileType fileType))
                             {
                                 configuration.FileType = fileType;
                             }
@@ -114,6 +114,17 @@ namespace Conglomo.DataPump
                                 // Firebird connection string
                                 configuration.ConnectionString = arg;
                                 configuration.Database = Database.Firebird;
+                            }
+                            else if (arg.Contains(".mdf", StringComparison.OrdinalIgnoreCase))
+                            {
+                                // Microsoft SQL Server connection string
+                                configuration.ConnectionString = arg;
+                                configuration.Database = Database.MSSQL;
+                            }
+                            else if (string.IsNullOrWhiteSpace(configuration.ConnectionString))
+                            {
+                                // SQL connection string
+                                configuration.ConnectionString = arg;
                             }
                         }
                     }

@@ -9,10 +9,12 @@ namespace Conglomo.DataPump
     using System;
     using System.Collections.Generic;
     using System.Data.Common;
+    using System.Data.SqlClient;
     using System.IO;
     using System.Security;
     using System.Threading.Tasks;
     using FirebirdSql.Data.FirebirdClient;
+    using MySql.Data.MySqlClient;
     using NPOI.HSSF.UserModel;
     using NPOI.SS.UserModel;
     using NPOI.XSSF.UserModel;
@@ -73,9 +75,11 @@ namespace Conglomo.DataPump
                         || ex is FbException
                         || ex is FileNotFoundException
                         || ex is IOException
+                        || ex is MySqlException
                         || ex is NotSupportedException
                         || ex is PathTooLongException
                         || ex is SecurityException
+                        || ex is SqlException
                         || ex is UnauthorizedAccessException)
                     {
                         throw new ArgumentException(Properties.Resources.PumpFailure, ex);
@@ -112,6 +116,44 @@ namespace Conglomo.DataPump
                     using var connection = new FbConnection(connectionString);
                     await connection.OpenAsync().ConfigureAwait(false);
                     using var command = new FbCommand(sql, connection);
+                    using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+
+                    // Execute the reader
+                    await foreach (var values in ExecuteReaderAsync(reader))
+                    {
+                        yield return values;
+                    }
+
+                    // Close the query and connection
+                    await reader.CloseAsync().ConfigureAwait(false);
+                    await command.DisposeAsync().ConfigureAwait(false);
+                    await connection.CloseAsync().ConfigureAwait(false);
+                }
+                else if (database == Database.MSSQL)
+                {
+                    // Open the connection and run the query
+                    using var connection = new SqlConnection(connectionString);
+                    await connection.OpenAsync().ConfigureAwait(false);
+                    using var command = new SqlCommand(sql, connection);
+                    using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+
+                    // Execute the reader
+                    await foreach (var values in ExecuteReaderAsync(reader))
+                    {
+                        yield return values;
+                    }
+
+                    // Close the query and connection
+                    await reader.CloseAsync().ConfigureAwait(false);
+                    await command.DisposeAsync().ConfigureAwait(false);
+                    await connection.CloseAsync().ConfigureAwait(false);
+                }
+                else if (database == Database.MySQL)
+                {
+                    // Open the connection and run the query
+                    using var connection = new MySqlConnection(connectionString);
+                    await connection.OpenAsync().ConfigureAwait(false);
+                    using var command = new MySqlCommand(sql, connection);
                     using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
 
                     // Execute the reader

@@ -20,5 +20,15 @@ namespace Conglomo.DataPump
         /// The Firebird database.
         /// </summary>
         Firebird = 1,
+
+        /// <summary>
+        /// The Microsoft SQL Server database.
+        /// </summary>
+        MSSQL = 2,
+
+        /// <summary>
+        /// The MySQL database.
+        /// </summary>
+        MySQL = 3,
     }
 }

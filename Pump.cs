@@ -7,7 +7,8 @@
 namespace Conglomo.DataPump
 {
     using System;
-    using System.Data;
+    using System.Collections.Generic;
+    using System.Data.Common;
     using System.IO;
     using System.Security;
     using System.Threading.Tasks;
@@ -30,8 +31,28 @@ namespace Conglomo.DataPump
             {
                 try
                 {
-                    // Execute the Firebird query
-                    var data = await ExecuteFirebirdQueryAsync(configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false);
+                    if (configuration.FileType == FileType.Csv)
+                    {
+                        // Execute the query
+                        using var writer = File.CreateText(configuration.OutputFile);
+                        await foreach (var values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
+                        {
+                            foreach (var value in values)
+                            {
+                                string? text = value?.ToString();
+                                if (text != default)
+                                {
+                                    await writer.WriteAsync(text.EncodeCsvField()).ConfigureAwait(false);
+                                    await writer.WriteAsync(',').ConfigureAwait(false);
+                                }
+                            }
+
+                            await writer.WriteLineAsync().ConfigureAwait(false);
+                            await writer.FlushAsync().ConfigureAwait(false);
+                        }
+
+                        writer.Close();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -61,26 +82,70 @@ namespace Conglomo.DataPump
         }
 
         /// <summary>
-        /// Executes the firebird query asynchronous.
+        /// Executes the firebird query asynchronously.
         /// </summary>
+        /// <param name="database">The database type.</param>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="sql">The SQL.</param>
-        /// <returns>The data table.</returns>
-        private static async Task<DataTable> ExecuteFirebirdQueryAsync(string connectionString, string sql)
+        /// <returns>
+        /// Each row, starting with the column names.
+        /// </returns>
+        /// <exception cref="ArgumentException">There was was invalid data pump configuration.</exception>
+        private static async IAsyncEnumerable<object[]> ExecuteQueryAsync(Database database, string connectionString, string sql)
         {
             if (!string.IsNullOrWhiteSpace(connectionString) && !string.IsNullOrWhiteSpace(sql))
             {
-                using FbConnection connection = new FbConnection(connectionString);
-                await connection.OpenAsync().ConfigureAwait(false);
-                using FbDataAdapter adapter = new FbDataAdapter(sql, connection);
-                DataSet data = new DataSet();
-                adapter.Fill(data);
-                await connection.CloseAsync().ConfigureAwait(false);
-                return data.Tables[0];
+                if (database == Database.Firebird)
+                {
+                    // Open the connection and run the query
+                    using var connection = new FbConnection(connectionString);
+                    await connection.OpenAsync().ConfigureAwait(false);
+                    using var command = new FbCommand(sql, connection);
+                    using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+
+                    // Execute the reader
+                    await foreach (var values in ExecuteReaderAsync(reader))
+                    {
+                        yield return values;
+                    }
+
+                    // Close the query and connection
+                    await reader.CloseAsync().ConfigureAwait(false);
+                    await command.DisposeAsync().ConfigureAwait(false);
+                    await connection.CloseAsync().ConfigureAwait(false);
+                }
             }
             else
             {
                 throw new ArgumentException(Properties.Resources.InvalidConfiguration);
+            }
+        }
+
+        /// <summary>
+        /// Executes the reader asynchronously.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <returns>
+        /// Each row from the reader, including the field names as the first row.
+        /// </returns>
+        private static async IAsyncEnumerable<object[]> ExecuteReaderAsync(DbDataReader reader)
+        {
+            // Get the field names
+            string[] fieldNames = new string[reader.FieldCount];
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                fieldNames[i] = reader.GetName(i);
+            }
+
+            // Return the field names
+            yield return fieldNames;
+
+            // Return the values
+            while (await reader.ReadAsync().ConfigureAwait(false))
+            {
+                var values = new object[reader.FieldCount];
+                reader.GetValues(values);
+                yield return values;
             }
         }
     }

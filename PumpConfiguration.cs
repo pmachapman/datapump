@@ -31,6 +31,14 @@ namespace Conglomo.DataPump
         public Database Database { get; set; }
 
         /// <summary>
+        /// Gets or sets the type of the file.
+        /// </summary>
+        /// <value>
+        /// The output file type.
+        /// </value>
+        public FileType FileType { get; set; }
+
+        /// <summary>
         /// Gets or sets the output file.
         /// </summary>
         /// <value>

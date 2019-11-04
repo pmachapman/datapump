@@ -98,7 +98,7 @@ namespace Conglomo.DataPump.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Usage: DATAPUMP.EXE [database type] [connection string] [sql file] [output file].
+        ///   Looks up a localized string similar to Usage: DATAPUMP.EXE [database type] [file type] [connection string] [sql file] [output file].
         /// </summary>
         internal static string UsageText {
             get {

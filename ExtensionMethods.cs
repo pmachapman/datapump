@@ -95,8 +95,17 @@ namespace Conglomo.DataPump
                             }
                             else if (arg.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
                             {
-                                // We only support CSV files at present
-                                configuration.FileType = FileType.Csv;
+                                configuration.FileType = FileType.CSV;
+                                configuration.OutputFile = arg;
+                            }
+                            else if (arg.EndsWith(".xls", StringComparison.OrdinalIgnoreCase))
+                            {
+                                configuration.FileType = FileType.XLS;
+                                configuration.OutputFile = arg;
+                            }
+                            else if (arg.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+                            {
+                                configuration.FileType = FileType.XLSX;
                                 configuration.OutputFile = arg;
                             }
                             else if (arg.Contains(".gdb", StringComparison.OrdinalIgnoreCase)

@@ -19,6 +19,16 @@ namespace Conglomo.DataPump
         /// <summary>
         /// A CSV file.
         /// </summary>
-        Csv = 1,
+        CSV = 1,
+
+        /// <summary>
+        /// An XLS file.
+        /// </summary>
+        XLS = 2,
+
+        /// <summary>
+        /// An XLSX file.
+        /// </summary>
+        XLSX = 3,
     }
 }

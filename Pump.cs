@@ -13,6 +13,9 @@ namespace Conglomo.DataPump
     using System.Security;
     using System.Threading.Tasks;
     using FirebirdSql.Data.FirebirdClient;
+    using NPOI.HSSF.UserModel;
+    using NPOI.SS.UserModel;
+    using NPOI.XSSF.UserModel;
 
     /// <summary>
     /// The main data pump.
@@ -31,7 +34,7 @@ namespace Conglomo.DataPump
             {
                 try
                 {
-                    if (configuration.FileType == FileType.Csv)
+                    if (configuration.FileType == FileType.CSV)
                     {
                         // Execute the query
                         using var writer = File.CreateText(configuration.OutputFile);
@@ -52,6 +55,14 @@ namespace Conglomo.DataPump
                         }
 
                         writer.Close();
+                    }
+                    else if (configuration.FileType == FileType.XLS)
+                    {
+                        await WriteSpreadsheet(configuration, new HSSFWorkbook()).ConfigureAwait(false);
+                    }
+                    else if (configuration.FileType == FileType.XLSX)
+                    {
+                        await WriteSpreadsheet(configuration, new XSSFWorkbook()).ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)
@@ -147,6 +158,29 @@ namespace Conglomo.DataPump
                 reader.GetValues(values);
                 yield return values;
             }
+        }
+
+        /// <summary>
+        /// Writes the spreadsheet.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="workbook">The workbook.</param>
+        /// <returns>The asynchronous task.</returns>
+        private static async Task WriteSpreadsheet(PumpConfiguration configuration, IWorkbook workbook)
+        {
+            using var fs = new FileStream(configuration.OutputFile, FileMode.Create, FileAccess.Write);
+            var sheet = workbook.CreateSheet("Output");
+            int i = 0;
+            await foreach (var values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
+            {
+                var row = sheet.CreateRow(i++);
+                for (int j = 0; j < values.Length; j++)
+                {
+                    row.CreateCell(j).SetCellValue(values[j]?.ToString());
+                }
+            }
+
+            workbook.Write(fs);
         }
     }
 }

@@ -28,6 +28,6 @@ This program can be used in batch files to automate data export from your databa
 
 ## Examples
 
-`DATAPUMP "localhost:C:\db\mydb.gdb" "c:\data\getcompanies.sql" companies.xlsx`
+`DATAPUMP "User=SYSDBA;Password=masterkey;Database=C:\db\mydb.gdb;DataSource=localhost;" "c:\data\get all companies.sql" companies.xlsx`
 
-`DATAPUMP Firebird CSV "localhost:C:\db\mydb.gdb" "c:\data\getcompanies.sql" c:\data\companies.csv`
+`DATAPUMP Firebird CSV "User=SYSDBA;Password=masterkey;Database=C:\db\mydb.gdb;DataSource=localhost;" c:\data\getcompanies.sql "c:\data\my companies.csv"`

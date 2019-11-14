@@ -28,14 +28,8 @@ namespace Conglomo.DataPump
             // Set up the string builder
             StringBuilder sb = new StringBuilder(field);
 
-            // Some fields with special characters must be embedded in double quotes
-            bool embedInQuotes = false;
-
-            // Embed in quotes to preserve leading/trailing whitespace
-            if (sb.Length > 0 && (sb[0] == ' ' || sb[0] == '\t' || sb[sb.Length - 1] == ' ' || sb[sb.Length - 1] == '\t'))
-            {
-                embedInQuotes = true;
-            }
+            // Fields with leading/trailing whitespace must be embedded in double quotes
+            bool embedInQuotes = sb.Length > 0 && (sb[0] == ' ' || sb[0] == '\t' || sb[sb.Length - 1] == ' ' || sb[sb.Length - 1] == '\t');
 
             // If we have not yet found a reason to embed in quotes
             if (!embedInQuotes)
@@ -55,12 +49,11 @@ namespace Conglomo.DataPump
             if (embedInQuotes)
             {
                 sb.Replace("\"", "\"\"");
-                return "\"" + sb.ToString() + "\"";
+                return $"\"{sb}\"";
             }
-            else
-            {
-                return sb.ToString();
-            }
+
+            // No quotes required
+            return sb.ToString();
         }
 
         /// <summary>
@@ -151,23 +144,14 @@ namespace Conglomo.DataPump
         /// <returns>
         ///   <c>true</c> if the specified pump configuration is valid; otherwise, <c>false</c>.
         /// </returns>
+        /// <remarks>Checks for empty values or an invalid SQL file.</remarks>
         public static bool IsValid(this PumpConfiguration configuration)
-        {
-            // Check for empty values or an invalid SQL file
-            if (configuration == default
-                || configuration.Database == Database.None
-                || string.IsNullOrWhiteSpace(configuration.ConnectionString)
-                || configuration.FileType == FileType.None
-                || string.IsNullOrWhiteSpace(configuration.OutputFile)
-                || string.IsNullOrWhiteSpace(configuration.SqlFile)
-                || !File.Exists(configuration.SqlFile))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+            => configuration != default
+                && configuration.Database != Database.None
+                && !string.IsNullOrWhiteSpace(configuration.ConnectionString)
+                && configuration.FileType != FileType.None
+                && !string.IsNullOrWhiteSpace(configuration.OutputFile)
+                && !string.IsNullOrWhiteSpace(configuration.SqlFile)
+                && File.Exists(configuration.SqlFile);
     }
 }

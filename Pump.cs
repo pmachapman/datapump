@@ -34,66 +34,42 @@ namespace Conglomo.DataPump
         {
             if (configuration != default && configuration.IsValid())
             {
-                try
+                switch (configuration.FileType)
                 {
-                    if (configuration.FileType == FileType.CSV)
-                    {
-                        // Execute the query
-                        using var writer = File.CreateText(configuration.OutputFile);
-                        await foreach (var values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
+                    case FileType.CSV:
                         {
-                            foreach (var value in values)
+                            // Execute the query
+                            using var writer = File.CreateText(configuration.OutputFile);
+                            await foreach (var values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
                             {
-                                string? text = value?.ToString();
-                                if (text != default)
+                                foreach (var value in values)
                                 {
-                                    await writer.WriteAsync(text.EncodeCsvField()).ConfigureAwait(false);
-                                    await writer.WriteAsync(',').ConfigureAwait(false);
+                                    string? text = value?.ToString();
+                                    if (text != default)
+                                    {
+                                        await writer.WriteAsync(text.EncodeCsvField()).ConfigureAwait(false);
+                                        await writer.WriteAsync(',').ConfigureAwait(false);
+                                    }
                                 }
+
+                                await writer.WriteLineAsync().ConfigureAwait(false);
+                                await writer.FlushAsync().ConfigureAwait(false);
                             }
 
-                            await writer.WriteLineAsync().ConfigureAwait(false);
-                            await writer.FlushAsync().ConfigureAwait(false);
+                            writer.Close();
+                            break;
                         }
 
-                        writer.Close();
-                    }
-                    else if (configuration.FileType == FileType.XLS)
-                    {
+                    case FileType.XLS:
                         await WriteSpreadsheet(configuration, new HSSFWorkbook()).ConfigureAwait(false);
-                    }
-                    else if (configuration.FileType == FileType.XLSX)
-                    {
+                        break;
+                    case FileType.XLSX:
                         await WriteSpreadsheet(configuration, new XSSFWorkbook()).ConfigureAwait(false);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (ex is ArgumentException
-                        || ex is ArgumentNullException
-                        || ex is DirectoryNotFoundException
-                        || ex is FbException
-                        || ex is FileNotFoundException
-                        || ex is IOException
-                        || ex is MySqlException
-                        || ex is NotSupportedException
-                        || ex is PathTooLongException
-                        || ex is SecurityException
-                        || ex is SqlException
-                        || ex is UnauthorizedAccessException)
-                    {
-                        throw new ArgumentException(Properties.Resources.PumpFailure, ex);
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                        break;
                 }
             }
-            else
-            {
-                throw new ArgumentException(Properties.Resources.InvalidConfiguration);
-            }
+
+            throw new ArgumentException(Properties.Resources.InvalidConfiguration);
         }
 
         /// <summary>
@@ -110,62 +86,70 @@ namespace Conglomo.DataPump
         {
             if (!string.IsNullOrWhiteSpace(connectionString) && !string.IsNullOrWhiteSpace(sql))
             {
-                if (database == Database.Firebird)
+                switch (database)
                 {
-                    // Open the connection and run the query
-                    using var connection = new FbConnection(connectionString);
-                    await connection.OpenAsync().ConfigureAwait(false);
-                    using var command = new FbCommand(sql, connection);
-                    using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                    case Database.Firebird:
+                        {
+                            // Open the connection and run the query
+                            using var connection = new FbConnection(connectionString);
+                            await connection.OpenAsync().ConfigureAwait(false);
+                            using var command = new FbCommand(sql, connection);
+                            using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
 
-                    // Execute the reader
-                    await foreach (var values in ExecuteReaderAsync(reader))
-                    {
-                        yield return values;
-                    }
+                            // Execute the reader
+                            await foreach (var values in ExecuteReaderAsync(reader))
+                            {
+                                yield return values;
+                            }
 
-                    // Close the query and connection
-                    await reader.CloseAsync().ConfigureAwait(false);
-                    await command.DisposeAsync().ConfigureAwait(false);
-                    await connection.CloseAsync().ConfigureAwait(false);
-                }
-                else if (database == Database.MSSQL)
-                {
-                    // Open the connection and run the query
-                    using var connection = new SqlConnection(connectionString);
-                    await connection.OpenAsync().ConfigureAwait(false);
-                    using var command = new SqlCommand(sql, connection);
-                    using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                            // Close the query and connection
+                            await reader.CloseAsync().ConfigureAwait(false);
+                            await command.DisposeAsync().ConfigureAwait(false);
+                            await connection.CloseAsync().ConfigureAwait(false);
+                            break;
+                        }
 
-                    // Execute the reader
-                    await foreach (var values in ExecuteReaderAsync(reader))
-                    {
-                        yield return values;
-                    }
+                    case Database.MSSQL:
+                        {
+                            // Open the connection and run the query
+                            using var connection = new SqlConnection(connectionString);
+                            await connection.OpenAsync().ConfigureAwait(false);
+                            using var command = new SqlCommand(sql, connection);
+                            using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
 
-                    // Close the query and connection
-                    await reader.CloseAsync().ConfigureAwait(false);
-                    await command.DisposeAsync().ConfigureAwait(false);
-                    await connection.CloseAsync().ConfigureAwait(false);
-                }
-                else if (database == Database.MySQL)
-                {
-                    // Open the connection and run the query
-                    using var connection = new MySqlConnection(connectionString);
-                    await connection.OpenAsync().ConfigureAwait(false);
-                    using var command = new MySqlCommand(sql, connection);
-                    using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                            // Execute the reader
+                            await foreach (var values in ExecuteReaderAsync(reader))
+                            {
+                                yield return values;
+                            }
 
-                    // Execute the reader
-                    await foreach (var values in ExecuteReaderAsync(reader))
-                    {
-                        yield return values;
-                    }
+                            // Close the query and connection
+                            await reader.CloseAsync().ConfigureAwait(false);
+                            await command.DisposeAsync().ConfigureAwait(false);
+                            await connection.CloseAsync().ConfigureAwait(false);
+                            break;
+                        }
 
-                    // Close the query and connection
-                    await reader.CloseAsync().ConfigureAwait(false);
-                    await command.DisposeAsync().ConfigureAwait(false);
-                    await connection.CloseAsync().ConfigureAwait(false);
+                    case Database.MySQL:
+                        {
+                            // Open the connection and run the query
+                            using var connection = new MySqlConnection(connectionString);
+                            await connection.OpenAsync().ConfigureAwait(false);
+                            using var command = new MySqlCommand(sql, connection);
+                            using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+
+                            // Execute the reader
+                            await foreach (var values in ExecuteReaderAsync(reader))
+                            {
+                                yield return values;
+                            }
+
+                            // Close the query and connection
+                            await reader.CloseAsync().ConfigureAwait(false);
+                            await command.DisposeAsync().ConfigureAwait(false);
+                            await connection.CloseAsync().ConfigureAwait(false);
+                            break;
+                        }
                 }
             }
             else

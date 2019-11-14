@@ -9,7 +9,7 @@ namespace Conglomo.DataPump
     /// <summary>
     /// The database type.
     /// </summary>
-    public enum Database : int
+    public enum Database
     {
         /// <summary>
         /// No database selected

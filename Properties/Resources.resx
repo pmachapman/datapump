@@ -129,10 +129,6 @@
     <value>Invalid data pump configuration.</value>
     <comment>Displayed on a data pump error</comment>
   </data>
-  <data name="PumpFailure" xml:space="preserve">
-    <value>Data pump failed to execute.</value>
-    <comment>Displayed on error</comment>
-  </data>
   <data name="UsageText" xml:space="preserve">
     <value>Usage: DATAPUMP.EXE [database type] [file type] [connection string] [sql file] [output file]</value>
     <comment>Displayed in the help text</comment>

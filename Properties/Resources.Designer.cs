@@ -89,15 +89,6 @@ namespace Conglomo.DataPump.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Data pump failed to execute..
-        /// </summary>
-        internal static string PumpFailure {
-            get {
-                return ResourceManager.GetString("PumpFailure", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Usage: DATAPUMP.EXE [database type] [file type] [connection string] [sql file] [output file].
         /// </summary>
         internal static string UsageText {

@@ -9,7 +9,7 @@ namespace Conglomo.DataPump
     /// <summary>
     /// The file type.
     /// </summary>
-    public enum FileType : int
+    public enum FileType
     {
         /// <summary>
         /// No file type to output.

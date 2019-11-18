@@ -50,7 +50,7 @@ namespace Conglomo.DataPump
                 {
                     DisplayHelp();
                     Console.WriteLine();
-                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine(ex);
                     return 1;
                 }
 

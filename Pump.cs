@@ -65,9 +65,6 @@ namespace Conglomo.DataPump
                     case FileType.XLSX:
                         await WriteSpreadsheet(configuration, new XSSFWorkbook()).ConfigureAwait(false);
                         return;
-                    case FileType.None:
-                    default:
-                        break;
                 }
             }
 
@@ -157,10 +154,6 @@ namespace Conglomo.DataPump
                         await connection.CloseAsync().ConfigureAwait(false);
                         break;
                     }
-
-                case Database.None:
-                default:
-                    break;
             }
         }
 

@@ -56,14 +56,12 @@ namespace Conglomo.DataPump
 
                 return 0;
             }
-            else
-            {
-                // Default to an error
-                DisplayHelp();
-                Console.WriteLine();
-                Console.WriteLine(Properties.Resources.InvalidArguments);
-                return 1;
-            }
+
+            // Default to an error
+            DisplayHelp();
+            Console.WriteLine();
+            Console.WriteLine(Properties.Resources.InvalidArguments);
+            return 1;
         }
 
         /// <summary>

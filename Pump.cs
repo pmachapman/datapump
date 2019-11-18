@@ -65,6 +65,9 @@ namespace Conglomo.DataPump
                     case FileType.XLSX:
                         await WriteSpreadsheet(configuration, new XSSFWorkbook()).ConfigureAwait(false);
                         return;
+                    case FileType.None:
+                    default:
+                        break;
                 }
             }
 
@@ -154,6 +157,10 @@ namespace Conglomo.DataPump
                         await connection.CloseAsync().ConfigureAwait(false);
                         break;
                     }
+
+                case Database.None:
+                default:
+                    break;
             }
         }
 
@@ -193,15 +200,38 @@ namespace Conglomo.DataPump
         /// <returns>The asynchronous task.</returns>
         private static async Task WriteSpreadsheet(PumpConfiguration configuration, IWorkbook workbook)
         {
+            // Set up the workbook
             using var fs = new FileStream(configuration.OutputFile, FileMode.Create, FileAccess.Write);
             var sheet = workbook.CreateSheet("Output");
+
+            // Set up the date format
+            var dataFormatCustom = workbook.CreateDataFormat();
+            var style = workbook.CreateCellStyle();
+            style.DataFormat = dataFormatCustom.GetFormat("d/MM/yyyy");
+
             int i = 0;
             await foreach (var values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
             {
                 var row = sheet.CreateRow(i++);
                 for (int j = 0; j < values.Length; j++)
                 {
-                    row.CreateCell(j).SetCellValue(values[j]?.ToString());
+                    if (values[j] != default)
+                    {
+                        if (values[j] is DateTime date)
+                        {
+                            var cell = row.CreateCell(j);
+                            cell.SetCellValue(date);
+                            cell.CellStyle = style;
+                        }
+                        else if (values[j] is string general)
+                        {
+                            row.CreateCell(j).SetCellValue(general);
+                        }
+                        else
+                        {
+                            row.CreateCell(j).SetCellValue(values[j].ToString());
+                        }
+                    }
                 }
             }
 

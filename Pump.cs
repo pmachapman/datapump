@@ -9,10 +9,10 @@ namespace Conglomo.DataPump
     using System;
     using System.Collections.Generic;
     using System.Data.Common;
-    using System.Data.SqlClient;
     using System.IO;
     using System.Threading.Tasks;
     using FirebirdSql.Data.FirebirdClient;
+    using Microsoft.Data.SqlClient;
     using MySql.Data.MySqlClient;
     using NPOI.HSSF.UserModel;
     using NPOI.SS.UserModel;

@@ -39,20 +39,38 @@ namespace Conglomo.DataPump
                         {
                             // Execute the query
                             using var writer = File.CreateText(configuration.OutputFile);
+                            bool firstRow = true;
                             await foreach (var values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
                             {
+                                bool firstColumn = true;
                                 foreach (var value in values)
                                 {
                                     string? text = value?.ToString();
                                     if (text != default)
                                     {
-                                        await writer.WriteAsync(text.EncodeCsvField()).ConfigureAwait(false);
+                                        // Check for SYLK workaround
+                                        if (firstRow && firstColumn && text == "ID")
+                                        {
+                                            await writer.WriteAsync("\"ID\"").ConfigureAwait(false);
+                                        }
+                                        else
+                                        {
+                                            await writer.WriteAsync(text.EncodeCsvField()).ConfigureAwait(false);
+                                        }
+
                                         await writer.WriteAsync(',').ConfigureAwait(false);
                                     }
+
+                                    // Clear the first column flag
+                                    firstColumn = false;
                                 }
 
+                                // Write and flush
                                 await writer.WriteLineAsync().ConfigureAwait(false);
                                 await writer.FlushAsync().ConfigureAwait(false);
+
+                                // Clear the first row flag
+                                firstRow = false;
                             }
 
                             writer.Close();

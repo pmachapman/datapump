@@ -43,9 +43,9 @@ namespace Conglomo.DataPump
                             await foreach (var values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
                             {
                                 bool firstColumn = true;
-                                foreach (var value in values)
+                                for (int i = 0; i < values.Length; i++)
                                 {
-                                    string? text = value?.ToString();
+                                    string? text = values[i]?.ToString();
                                     if (text != default)
                                     {
                                         // Check for SYLK workaround
@@ -58,7 +58,11 @@ namespace Conglomo.DataPump
                                             await writer.WriteAsync(text.EncodeCsvField()).ConfigureAwait(false);
                                         }
 
-                                        await writer.WriteAsync(',').ConfigureAwait(false);
+                                        // If this is not the last column, write the comma
+                                        if (i < values.Length - 1)
+                                        {
+                                            await writer.WriteAsync(',').ConfigureAwait(false);
+                                        }
                                     }
 
                                     // Clear the first column flag

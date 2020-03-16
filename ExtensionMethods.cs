@@ -29,7 +29,7 @@ namespace Conglomo.DataPump
             StringBuilder sb = new StringBuilder(field);
 
             // Fields with leading/trailing whitespace must be embedded in double quotes
-            bool embedInQuotes = sb.Length > 0 && (sb[0] == ' ' || sb[0] == '\t' || sb[sb.Length - 1] == ' ' || sb[sb.Length - 1] == '\t');
+            bool embedInQuotes = sb.Length > 0 && (sb[0] == ' ' || sb[0] == '\t' || sb[^1] == ' ' || sb[^1] == '\t');
 
             // If we have not yet found a reason to embed in quotes
             if (!embedInQuotes)

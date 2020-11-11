@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="Database.cs" company="Conglomo">
-// Copyright 2019 Conglomo Limited. All Rights Reserved.
+// Copyright 2019-2020 Conglomo Limited. All Rights Reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 

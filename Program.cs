@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="Program.cs" company="Conglomo">
-// Copyright 2019-2020 Conglomo Limited. All Rights Reserved.
+// Copyright 2019-2021 Conglomo Limited. Please see LICENSE for license details.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -69,11 +69,11 @@ namespace Conglomo.DataPump
         /// </summary>
         private static void DisplayHelp()
         {
-            var assembly = Assembly.GetEntryAssembly();
+            Assembly? assembly = Assembly.GetEntryAssembly();
             if (assembly != default)
             {
                 // Display the product name
-                var attributes = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+                object[] attributes = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
                 if (attributes.Any())
                 {
                     string productName = ((AssemblyProductAttribute)attributes.First()).Product;

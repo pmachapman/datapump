@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="Pump.cs" company="Conglomo">
-// Copyright 2019-2020 Conglomo Limited. All Rights Reserved.
+// Copyright 2019-2021 Conglomo Limited. Please see LICENSE for license details.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -38,9 +38,9 @@ namespace Conglomo.DataPump
                     case FileType.CSV:
                         {
                             // Execute the query
-                            using var writer = File.CreateText(configuration.OutputFile);
+                            using StreamWriter writer = File.CreateText(configuration.OutputFile);
                             bool firstRow = true;
-                            await foreach (var values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
+                            await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
                             {
                                 bool firstColumn = true;
                                 for (int i = 0; i < values.Length; i++)
@@ -117,13 +117,13 @@ namespace Conglomo.DataPump
                 case Database.Firebird:
                     {
                         // Open the connection and run the query
-                        using var connection = new FbConnection(connectionString);
+                        using FbConnection connection = new FbConnection(connectionString);
                         await connection.OpenAsync().ConfigureAwait(false);
-                        using var command = new FbCommand(sql, connection);
-                        using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                        using FbCommand command = new FbCommand(sql, connection);
+                        using DbDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
 
                         // Execute the reader
-                        await foreach (var values in ExecuteReaderAsync(reader))
+                        await foreach (object[] values in ExecuteReaderAsync(reader))
                         {
                             yield return values;
                         }
@@ -138,13 +138,13 @@ namespace Conglomo.DataPump
                 case Database.MSSQL:
                     {
                         // Open the connection and run the query
-                        using var connection = new SqlConnection(connectionString);
+                        using SqlConnection connection = new SqlConnection(connectionString);
                         await connection.OpenAsync().ConfigureAwait(false);
-                        using var command = new SqlCommand(sql, connection);
-                        using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                        using SqlCommand command = new SqlCommand(sql, connection);
+                        using SqlDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
 
                         // Execute the reader
-                        await foreach (var values in ExecuteReaderAsync(reader))
+                        await foreach (object[] values in ExecuteReaderAsync(reader))
                         {
                             yield return values;
                         }
@@ -159,13 +159,13 @@ namespace Conglomo.DataPump
                 case Database.MySQL:
                     {
                         // Open the connection and run the query
-                        using var connection = new MySqlConnection(connectionString);
+                        using MySqlConnection connection = new MySqlConnection(connectionString);
                         await connection.OpenAsync().ConfigureAwait(false);
-                        using var command = new MySqlCommand(sql, connection);
-                        using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                        using MySqlCommand command = new MySqlCommand(sql, connection);
+                        using DbDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
 
                         // Execute the reader
-                        await foreach (var values in ExecuteReaderAsync(reader))
+                        await foreach (object[] values in ExecuteReaderAsync(reader))
                         {
                             yield return values;
                         }
@@ -201,7 +201,7 @@ namespace Conglomo.DataPump
             // Return the values
             while (await reader.ReadAsync().ConfigureAwait(false))
             {
-                var values = new object[reader.FieldCount];
+                object[] values = new object[reader.FieldCount];
                 reader.GetValues(values);
                 yield return values;
             }
@@ -216,25 +216,25 @@ namespace Conglomo.DataPump
         private static async Task WriteSpreadsheet(PumpConfiguration configuration, IWorkbook workbook)
         {
             // Set up the workbook
-            using var fs = new FileStream(configuration.OutputFile, FileMode.Create, FileAccess.Write);
-            var sheet = workbook.CreateSheet("Output");
+            using FileStream fs = new FileStream(configuration.OutputFile, FileMode.Create, FileAccess.Write);
+            ISheet sheet = workbook.CreateSheet("Output");
 
             // Set up the date format
-            var dataFormatCustom = workbook.CreateDataFormat();
-            var style = workbook.CreateCellStyle();
+            IDataFormat dataFormatCustom = workbook.CreateDataFormat();
+            ICellStyle style = workbook.CreateCellStyle();
             style.DataFormat = dataFormatCustom.GetFormat("d/MM/yyyy");
 
             int i = 0;
-            await foreach (var values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
+            await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
             {
-                var row = sheet.CreateRow(i++);
+                IRow row = sheet.CreateRow(i++);
                 for (int j = 0; j < values.Length; j++)
                 {
                     if (values[j] != default)
                     {
                         if (values[j] is DateTime date)
                         {
-                            var cell = row.CreateCell(j);
+                            ICell cell = row.CreateCell(j);
                             cell.SetCellValue(date);
                             cell.CellStyle = style;
                         }

@@ -38,9 +38,9 @@ namespace Conglomo.DataPump
                     case FileType.CSV:
                         {
                             // Execute the query
-                            using StreamWriter writer = File.CreateText(configuration.OutputFile);
+                            await using StreamWriter writer = File.CreateText(configuration.OutputFile);
                             bool firstRow = true;
-                            await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
+                            await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, await File.ReadAllTextAsync(configuration.SqlFile)).ConfigureAwait(false))
                             {
                                 bool firstColumn = true;
                                 for (int i = 0; i < values.Length; i++)
@@ -117,10 +117,10 @@ namespace Conglomo.DataPump
                 case Database.Firebird:
                     {
                         // Open the connection and run the query
-                        using FbConnection connection = new FbConnection(connectionString);
+                        await using FbConnection connection = new FbConnection(connectionString);
                         await connection.OpenAsync().ConfigureAwait(false);
-                        using FbCommand command = new FbCommand(sql, connection);
-                        using DbDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                        await using FbCommand command = new FbCommand(sql, connection);
+                        await using DbDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
 
                         // Execute the reader
                         await foreach (object[] values in ExecuteReaderAsync(reader))
@@ -138,10 +138,10 @@ namespace Conglomo.DataPump
                 case Database.MSSQL:
                     {
                         // Open the connection and run the query
-                        using SqlConnection connection = new SqlConnection(connectionString);
+                        await using SqlConnection connection = new SqlConnection(connectionString);
                         await connection.OpenAsync().ConfigureAwait(false);
-                        using SqlCommand command = new SqlCommand(sql, connection);
-                        using SqlDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                        await using SqlCommand command = new SqlCommand(sql, connection);
+                        await using SqlDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
 
                         // Execute the reader
                         await foreach (object[] values in ExecuteReaderAsync(reader))
@@ -159,10 +159,10 @@ namespace Conglomo.DataPump
                 case Database.MySQL:
                     {
                         // Open the connection and run the query
-                        using MySqlConnection connection = new MySqlConnection(connectionString);
+                        await using MySqlConnection connection = new MySqlConnection(connectionString);
                         await connection.OpenAsync().ConfigureAwait(false);
-                        using MySqlCommand command = new MySqlCommand(sql, connection);
-                        using DbDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                        await using MySqlCommand command = new MySqlCommand(sql, connection);
+                        await using DbDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
 
                         // Execute the reader
                         await foreach (object[] values in ExecuteReaderAsync(reader))
@@ -216,7 +216,7 @@ namespace Conglomo.DataPump
         private static async Task WriteSpreadsheet(PumpConfiguration configuration, IWorkbook workbook)
         {
             // Set up the workbook
-            using FileStream fs = new FileStream(configuration.OutputFile, FileMode.Create, FileAccess.Write);
+            await using FileStream fs = new FileStream(configuration.OutputFile, FileMode.Create, FileAccess.Write);
             ISheet sheet = workbook.CreateSheet("Output");
 
             // Set up the date format
@@ -225,7 +225,7 @@ namespace Conglomo.DataPump
             style.DataFormat = dataFormatCustom.GetFormat("d/MM/yyyy");
 
             int i = 0;
-            await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, File.ReadAllText(configuration.SqlFile)).ConfigureAwait(false))
+            await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, await File.ReadAllTextAsync(configuration.SqlFile)).ConfigureAwait(false))
             {
                 IRow row = sheet.CreateRow(i++);
                 for (int j = 0; j < values.Length; j++)

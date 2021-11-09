@@ -4,31 +4,30 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Conglomo.DataPump
+namespace Conglomo.DataPump;
+
+/// <summary>
+/// The file type.
+/// </summary>
+public enum FileType
 {
     /// <summary>
-    /// The file type.
+    /// No file type to output.
     /// </summary>
-    public enum FileType
-    {
-        /// <summary>
-        /// No file type to output.
-        /// </summary>
-        None = 0,
+    None = 0,
 
-        /// <summary>
-        /// A CSV file.
-        /// </summary>
-        CSV = 1,
+    /// <summary>
+    /// A CSV file.
+    /// </summary>
+    CSV = 1,
 
-        /// <summary>
-        /// An XLS file.
-        /// </summary>
-        XLS = 2,
+    /// <summary>
+    /// An XLS file.
+    /// </summary>
+    XLS = 2,
 
-        /// <summary>
-        /// An XLSX file.
-        /// </summary>
-        XLSX = 3,
-    }
+    /// <summary>
+    /// An XLSX file.
+    /// </summary>
+    XLSX = 3,
 }

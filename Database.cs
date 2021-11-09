@@ -4,31 +4,30 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Conglomo.DataPump
+namespace Conglomo.DataPump;
+
+/// <summary>
+/// The database type.
+/// </summary>
+public enum Database
 {
     /// <summary>
-    /// The database type.
+    /// No database selected.
     /// </summary>
-    public enum Database
-    {
-        /// <summary>
-        /// No database selected.
-        /// </summary>
-        None = 0,
+    None = 0,
 
-        /// <summary>
-        /// The Firebird database.
-        /// </summary>
-        Firebird = 1,
+    /// <summary>
+    /// The Firebird database.
+    /// </summary>
+    Firebird = 1,
 
-        /// <summary>
-        /// The Microsoft SQL Server database.
-        /// </summary>
-        MSSQL = 2,
+    /// <summary>
+    /// The Microsoft SQL Server database.
+    /// </summary>
+    MSSQL = 2,
 
-        /// <summary>
-        /// The MySQL database.
-        /// </summary>
-        MySQL = 3,
-    }
+    /// <summary>
+    /// The MySQL database.
+    /// </summary>
+    MySQL = 3,
 }

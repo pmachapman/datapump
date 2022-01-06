@@ -7,7 +7,7 @@
     <Company>Conglomo</Company>
     <Authors>Peter Chapman</Authors>
     <Product>DataPump</Product>
-    <Copyright>Copyright 2019-2021 Conglomo Limited. Please see LICENSE for license details.</Copyright>
+    <Copyright>Copyright 2019-2022 Conglomo Limited. Please see LICENSE for license details.</Copyright>
     <AssemblyName>DataPump</AssemblyName>
     <ApplicationIcon>Resources\GASPUMP.ICO</ApplicationIcon>
     <StartupObject>Conglomo.DataPump.Program</StartupObject>
@@ -35,7 +35,7 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="4.0.0" />
     <PackageReference Include="NPOI" Version="2.5.5" />
     <PackageReference Include="MySql.Data" Version="8.0.27" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354">
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

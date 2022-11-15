@@ -66,77 +66,67 @@ public static class ExtensionMethods
     /// </returns>
     public static PumpConfiguration ParseArguments(this PumpConfiguration configuration, string[] args)
     {
-        if (configuration == default || args == default)
-        {
-            return configuration ?? new PumpConfiguration();
-        }
-
         foreach (string arg in args)
         {
             try
             {
-                if (arg != default)
+                if (Enum.TryParse(arg, true, out Database database))
                 {
-                    if (Enum.TryParse(arg, true, out Database database))
-                    {
-                        configuration.Database = database;
-                    }
-                    else if (Enum.TryParse(arg, true, out FileType fileType))
-                    {
-                        configuration.FileType = fileType;
-                    }
-                    else if (arg.EndsWith(".sql", StringComparison.OrdinalIgnoreCase))
-                    {
-                        configuration.SqlFile = arg;
-                    }
-                    else if (arg.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
-                    {
-                        configuration.FileType = FileType.CSV;
-                        configuration.OutputFile = arg;
-                    }
-                    else if (arg.EndsWith(".xls", StringComparison.OrdinalIgnoreCase))
-                    {
-                        configuration.FileType = FileType.XLS;
-                        configuration.OutputFile = arg;
-                    }
-                    else if (arg.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
-                    {
-                        configuration.FileType = FileType.XLSX;
-                        configuration.OutputFile = arg;
-                    }
-                    else if (arg.Contains(".gdb", StringComparison.OrdinalIgnoreCase)
-                            || arg.Contains(".fdb", StringComparison.OrdinalIgnoreCase))
-                    {
-                        // Firebird connection string
-                        configuration.ConnectionString = arg;
-                        configuration.Database = Database.Firebird;
-                    }
-                    else if (arg.Contains(".mdf", StringComparison.OrdinalIgnoreCase))
-                    {
-                        // Microsoft SQL Server connection string
-                        configuration.ConnectionString = arg;
-                        configuration.Database = Database.MSSQL;
-                    }
-                    else if (string.IsNullOrWhiteSpace(configuration.ConnectionString))
-                    {
-                        // SQL connection string
-                        configuration.ConnectionString = arg;
-                    }
+                    configuration.Database = database;
+                }
+                else if (Enum.TryParse(arg, true, out FileType fileType))
+                {
+                    configuration.FileType = fileType;
+                }
+                else if (arg.EndsWith(".sql", StringComparison.OrdinalIgnoreCase))
+                {
+                    configuration.SqlFile = arg;
+                }
+                else if (arg.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                {
+                    configuration.FileType = FileType.CSV;
+                    configuration.OutputFile = arg;
+                }
+                else if (arg.EndsWith(".xls", StringComparison.OrdinalIgnoreCase))
+                {
+                    configuration.FileType = FileType.XLS;
+                    configuration.OutputFile = arg;
+                }
+                else if (arg.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+                {
+                    configuration.FileType = FileType.XLSX;
+                    configuration.OutputFile = arg;
+                }
+                else if (arg.Contains(".gdb", StringComparison.OrdinalIgnoreCase)
+                        || arg.Contains(".fdb", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Firebird connection string
+                    configuration.ConnectionString = arg;
+                    configuration.Database = Database.Firebird;
+                }
+                else if (arg.Contains(".mdf", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Microsoft SQL Server connection string
+                    configuration.ConnectionString = arg;
+                    configuration.Database = Database.MSSQL;
+                }
+                else if (string.IsNullOrWhiteSpace(configuration.ConnectionString))
+                {
+                    // SQL connection string
+                    configuration.ConnectionString = arg;
                 }
             }
             catch (Exception ex)
             {
                 // Ignore errors
-                if (!(ex is ArgumentException
-                    || ex is ArgumentNullException
-                    || ex is InvalidOperationException))
+                if (ex is not (ArgumentException or ArgumentNullException or InvalidOperationException))
                 {
                     throw;
                 }
             }
         }
 
-        return configuration ?? new PumpConfiguration();
+        return configuration;
     }
 
     /// <summary>
@@ -148,8 +138,7 @@ public static class ExtensionMethods
     /// </returns>
     /// <remarks>Checks for empty values or an invalid SQL file.</remarks>
     public static bool IsValid(this PumpConfiguration configuration)
-        => configuration != default
-            && configuration.Database != Database.None
+        => configuration.Database != Database.None
             && !string.IsNullOrWhiteSpace(configuration.ConnectionString)
             && configuration.FileType != FileType.None
             && !string.IsNullOrWhiteSpace(configuration.OutputFile)

@@ -26,8 +26,7 @@ public static class Program
     /// </returns>
     public static async Task<int> Main(string[] args)
     {
-        if (args == default
-            || !args.Any()
+        if (!args.Any()
             || args.FirstOrDefault() == "/?"
             || args.FirstOrDefault() == "-?"
             || args.FirstOrDefault()?.ToUpperInvariant() == "-H"
@@ -44,7 +43,7 @@ public static class Program
         {
             try
             {
-                await Pump.ExecuteAsync(configuration).ConfigureAwait(false);
+                await Pump.ExecuteAsync(configuration);
             }
             catch (ArgumentException ex)
             {
@@ -99,7 +98,7 @@ public static class Program
                 companyName = ((AssemblyCompanyAttribute)attributes.First()).Company;
             }
 
-            Console.WriteLine((companyName + " " + productName + " " + version).Trim());
+            Console.WriteLine((companyName + @" " + productName + @" " + version).Trim());
         }
 
         // Display the copyright message

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.Data.SqlClient;
@@ -28,10 +29,10 @@ public static class Pump
     /// </summary>
     /// <param name="configuration">The configuration.</param>
     /// <returns>The asynchronous task.</returns>
-    /// <exception cref="ArgumentException">Thrown when the configration is invalid.</exception>
+    /// <exception cref="ArgumentException">Thrown when the configuration is invalid.</exception>
     public static async Task ExecuteAsync(PumpConfiguration configuration)
     {
-        if (configuration != default && configuration.IsValid())
+        if (configuration.IsValid())
         {
             switch (configuration.FileType)
             {
@@ -40,28 +41,28 @@ public static class Pump
                         // Execute the query
                         await using StreamWriter writer = File.CreateText(configuration.OutputFile);
                         bool firstRow = true;
-                        await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, await File.ReadAllTextAsync(configuration.SqlFile)).ConfigureAwait(false))
+                        await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, await File.ReadAllTextAsync(configuration.SqlFile)))
                         {
                             bool firstColumn = true;
                             for (int i = 0; i < values.Length; i++)
                             {
-                                string? text = values[i]?.ToString();
+                                string? text = values[i].ToString();
                                 if (text != default)
                                 {
                                     // Check for SYLK workaround
                                     if (firstRow && firstColumn && text == "ID")
                                     {
-                                        await writer.WriteAsync("\"ID\"").ConfigureAwait(false);
+                                        await writer.WriteAsync("\"ID\"");
                                     }
                                     else
                                     {
-                                        await writer.WriteAsync(text.EncodeCsvField()).ConfigureAwait(false);
+                                        await writer.WriteAsync(text.EncodeCsvField());
                                     }
 
                                     // If this is not the last column, write the comma
                                     if (i < values.Length - 1)
                                     {
-                                        await writer.WriteAsync(',').ConfigureAwait(false);
+                                        await writer.WriteAsync(',');
                                     }
                                 }
 
@@ -70,8 +71,8 @@ public static class Pump
                             }
 
                             // Write and flush
-                            await writer.WriteLineAsync().ConfigureAwait(false);
-                            await writer.FlushAsync().ConfigureAwait(false);
+                            await writer.WriteLineAsync();
+                            await writer.FlushAsync();
 
                             // Clear the first row flag
                             firstRow = false;
@@ -82,10 +83,10 @@ public static class Pump
                     }
 
                 case FileType.XLS:
-                    await WriteSpreadsheet(configuration, new HSSFWorkbook()).ConfigureAwait(false);
+                    await WriteSpreadsheet(configuration, new HSSFWorkbook());
                     return;
                 case FileType.XLSX:
-                    await WriteSpreadsheet(configuration, new XSSFWorkbook()).ConfigureAwait(false);
+                    await WriteSpreadsheet(configuration, new XSSFWorkbook());
                     return;
             }
         }
@@ -94,7 +95,7 @@ public static class Pump
     }
 
     /// <summary>
-    /// Executes the firebird query asynchronously.
+    /// Executes the Firebird query asynchronously.
     /// </summary>
     /// <param name="database">The database type.</param>
     /// <param name="connectionString">The connection string.</param>
@@ -118,9 +119,9 @@ public static class Pump
                 {
                     // Open the connection and run the query
                     await using FbConnection connection = new FbConnection(connectionString);
-                    await connection.OpenAsync().ConfigureAwait(false);
+                    await connection.OpenAsync();
                     await using FbCommand command = new FbCommand(sql, connection);
-                    await using DbDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                    await using DbDataReader reader = await command.ExecuteReaderAsync();
 
                     // Execute the reader
                     await foreach (object[] values in ExecuteReaderAsync(reader))
@@ -129,9 +130,9 @@ public static class Pump
                     }
 
                     // Close the query and connection
-                    await reader.CloseAsync().ConfigureAwait(false);
-                    await command.DisposeAsync().ConfigureAwait(false);
-                    await connection.CloseAsync().ConfigureAwait(false);
+                    await reader.CloseAsync();
+                    await command.DisposeAsync();
+                    await connection.CloseAsync();
                     break;
                 }
 
@@ -139,9 +140,9 @@ public static class Pump
                 {
                     // Open the connection and run the query
                     await using SqlConnection connection = new SqlConnection(connectionString);
-                    await connection.OpenAsync().ConfigureAwait(false);
+                    await connection.OpenAsync();
                     await using SqlCommand command = new SqlCommand(sql, connection);
-                    await using SqlDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                    await using SqlDataReader reader = await command.ExecuteReaderAsync();
 
                     // Execute the reader
                     await foreach (object[] values in ExecuteReaderAsync(reader))
@@ -150,9 +151,9 @@ public static class Pump
                     }
 
                     // Close the query and connection
-                    await reader.CloseAsync().ConfigureAwait(false);
-                    await command.DisposeAsync().ConfigureAwait(false);
-                    await connection.CloseAsync().ConfigureAwait(false);
+                    await reader.CloseAsync();
+                    await command.DisposeAsync();
+                    await connection.CloseAsync();
                     break;
                 }
 
@@ -160,9 +161,9 @@ public static class Pump
                 {
                     // Open the connection and run the query
                     await using MySqlConnection connection = new MySqlConnection(connectionString);
-                    await connection.OpenAsync().ConfigureAwait(false);
+                    await connection.OpenAsync();
                     await using MySqlCommand command = new MySqlCommand(sql, connection);
-                    await using DbDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                    await using DbDataReader reader = await command.ExecuteReaderAsync();
 
                     // Execute the reader
                     await foreach (object[] values in ExecuteReaderAsync(reader))
@@ -171,9 +172,9 @@ public static class Pump
                     }
 
                     // Close the query and connection
-                    await reader.CloseAsync().ConfigureAwait(false);
-                    await command.DisposeAsync().ConfigureAwait(false);
-                    await connection.CloseAsync().ConfigureAwait(false);
+                    await reader.CloseAsync();
+                    await command.DisposeAsync();
+                    await connection.CloseAsync();
                     break;
                 }
         }
@@ -196,10 +197,10 @@ public static class Pump
         }
 
         // Return the field names
-        yield return fieldNames;
+        yield return fieldNames.ToArray<object>();
 
         // Return the values
-        while (await reader.ReadAsync().ConfigureAwait(false))
+        while (await reader.ReadAsync())
         {
             object[] values = new object[reader.FieldCount];
             reader.GetValues(values);
@@ -225,27 +226,24 @@ public static class Pump
         style.DataFormat = dataFormatCustom.GetFormat("d/MM/yyyy");
 
         int i = 0;
-        await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, await File.ReadAllTextAsync(configuration.SqlFile)).ConfigureAwait(false))
+        await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, await File.ReadAllTextAsync(configuration.SqlFile)))
         {
             IRow row = sheet.CreateRow(i++);
             for (int j = 0; j < values.Length; j++)
             {
-                if (values[j] != default)
+                if (values[j] is DateTime date)
                 {
-                    if (values[j] is DateTime date)
-                    {
-                        ICell cell = row.CreateCell(j);
-                        cell.SetCellValue(date);
-                        cell.CellStyle = style;
-                    }
-                    else if (values[j] is string general)
-                    {
-                        row.CreateCell(j).SetCellValue(general);
-                    }
-                    else
-                    {
-                        row.CreateCell(j).SetCellValue(values[j].ToString());
-                    }
+                    ICell cell = row.CreateCell(j);
+                    cell.SetCellValue(date);
+                    cell.CellStyle = style;
+                }
+                else if (values[j] is string general)
+                {
+                    row.CreateCell(j).SetCellValue(general);
+                }
+                else
+                {
+                    row.CreateCell(j).SetCellValue(values[j].ToString());
                 }
             }
         }

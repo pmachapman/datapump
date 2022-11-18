@@ -248,6 +248,6 @@ public static class Pump
             }
         }
 
-        workbook.Write(fs);
+        workbook.Write(fs, false);
     }
 }

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="Pump.cs" company="Conglomo">
-// Copyright 2019-2022 Conglomo Limited. Please see LICENSE for license details.
+// Copyright 2019-2023 Conglomo Limited. Please see LICENSE for license details.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -83,11 +83,18 @@ public static class Pump
                     }
 
                 case FileType.XLS:
-                    await WriteSpreadsheet(configuration, new HSSFWorkbook());
-                    return;
+                    {
+                        using IWorkbook workbook = new HSSFWorkbook();
+                        await WriteSpreadsheet(configuration, workbook);
+                        return;
+                    }
+
                 case FileType.XLSX:
-                    await WriteSpreadsheet(configuration, new XSSFWorkbook());
-                    return;
+                    {
+                        using IWorkbook workbook = new XSSFWorkbook();
+                        await WriteSpreadsheet(configuration, workbook);
+                        return;
+                    }
             }
         }
 

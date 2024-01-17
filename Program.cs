@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="Program.cs" company="Conglomo">
-// Copyright 2019-2023 Conglomo Limited. Please see LICENSE for license details.
+// Copyright 2019-2024 Conglomo Limited. Please see LICENSE for license details.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ public static class Program
     /// </returns>
     public static async Task<int> Main(string[] args)
     {
-        if (!args.Any()
+        if (args.Length == 0
             || args.FirstOrDefault() == "/?"
             || args.FirstOrDefault() == "-?"
             || args.FirstOrDefault()?.ToUpperInvariant() == "-H"
@@ -76,12 +76,12 @@ public static class Program
 
         // Display the product name
         object[] attributes = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-        if (attributes.Any())
+        if (attributes.Length > 0)
         {
             string productName = ((AssemblyProductAttribute)attributes.First()).Product;
             string version = string.Empty;
             attributes = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
-            if (attributes.Any())
+            if (attributes.Length > 0)
             {
                 Version ver = new Version(((AssemblyFileVersionAttribute)attributes.First()).Version);
                 version = ver.Major.ToString(CultureInfo.InvariantCulture) + "." + ver.Minor.ToString(CultureInfo.InvariantCulture);
@@ -93,7 +93,7 @@ public static class Program
 
             string companyName = string.Empty;
             attributes = assembly.GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-            if (attributes.Any())
+            if (attributes.Length > 0)
             {
                 companyName = ((AssemblyCompanyAttribute)attributes.First()).Company;
             }
@@ -103,7 +103,7 @@ public static class Program
 
         // Display the copyright message
         attributes = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-        if (attributes.Any())
+        if (attributes.Length > 0)
         {
             Console.WriteLine(((AssemblyCopyrightAttribute)attributes.First()).Copyright);
         }

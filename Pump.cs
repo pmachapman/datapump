@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="Pump.cs" company="Conglomo">
-// Copyright 2019-2023 Conglomo Limited. Please see LICENSE for license details.
+// Copyright 2019-2024 Conglomo Limited. Please see LICENSE for license details.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -110,7 +110,7 @@ public static class Pump
     /// <returns>
     /// Each row, starting with the column names.
     /// </returns>
-    /// <exception cref="ArgumentException">There was was invalid data pump configuration.</exception>
+    /// <exception cref="ArgumentException">There was an invalid data pump configuration.</exception>
     private static async IAsyncEnumerable<object[]> ExecuteQueryAsync(Database database, string connectionString, string sql)
     {
         // Ensure we have enough to start with
@@ -138,7 +138,6 @@ public static class Pump
 
                     // Close the query and connection
                     await reader.CloseAsync();
-                    await command.DisposeAsync();
                     await connection.CloseAsync();
                     break;
                 }
@@ -159,7 +158,6 @@ public static class Pump
 
                     // Close the query and connection
                     await reader.CloseAsync();
-                    await command.DisposeAsync();
                     await connection.CloseAsync();
                     break;
                 }
@@ -180,7 +178,6 @@ public static class Pump
 
                     // Close the query and connection
                     await reader.CloseAsync();
-                    await command.DisposeAsync();
                     await connection.CloseAsync();
                     break;
                 }
@@ -255,6 +252,6 @@ public static class Pump
             }
         }
 
-        workbook.Write(fs, false);
+        workbook.Write(fs);
     }
 }

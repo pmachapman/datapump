@@ -41,7 +41,11 @@ public static class Pump
                         // Execute the query
                         await using StreamWriter writer = File.CreateText(configuration.OutputFile);
                         bool firstRow = true;
-                        await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, await File.ReadAllTextAsync(configuration.SqlFile)))
+                        await foreach (
+                            object[] values in ExecuteQueryAsync(
+                                configuration.Database,
+                                configuration.ConnectionString,
+                                await File.ReadAllTextAsync(configuration.SqlFile)))
                         {
                             bool firstColumn = true;
                             for (int i = 0; i < values.Length; i++)
@@ -111,7 +115,10 @@ public static class Pump
     /// Each row, starting with the column names.
     /// </returns>
     /// <exception cref="ArgumentException">There was an invalid data pump configuration.</exception>
-    private static async IAsyncEnumerable<object[]> ExecuteQueryAsync(Database database, string connectionString, string sql)
+    private static async IAsyncEnumerable<object[]> ExecuteQueryAsync(
+        Database database,
+        string connectionString,
+        string sql)
     {
         // Ensure we have enough to start with
         if (string.IsNullOrWhiteSpace(connectionString) || string.IsNullOrWhiteSpace(sql))
@@ -221,7 +228,10 @@ public static class Pump
     private static async Task WriteSpreadsheet(PumpConfiguration configuration, IWorkbook workbook)
     {
         // Set up the workbook
-        await using FileStream fs = new FileStream(configuration.OutputFile, FileMode.Create, FileAccess.Write);
+        await using FileStream fs = new FileStream(
+            configuration.OutputFile,
+            FileMode.Create,
+            FileAccess.Write);
         ISheet sheet = workbook.CreateSheet("Output");
 
         // Set up the date format
@@ -230,7 +240,11 @@ public static class Pump
         style.DataFormat = dataFormatCustom.GetFormat("d/MM/yyyy");
 
         int i = 0;
-        await foreach (object[] values in ExecuteQueryAsync(configuration.Database, configuration.ConnectionString, await File.ReadAllTextAsync(configuration.SqlFile)))
+        await foreach (
+            object[] values in ExecuteQueryAsync(
+                configuration.Database,
+                configuration.ConnectionString,
+                await File.ReadAllTextAsync(configuration.SqlFile)))
         {
             IRow row = sheet.CreateRow(i++);
             for (int j = 0; j < values.Length; j++)

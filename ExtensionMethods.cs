@@ -29,7 +29,8 @@ public static class ExtensionMethods
         StringBuilder sb = new StringBuilder(field);
 
         // Fields with leading/trailing whitespace must be embedded in double quotes
-        bool embedInQuotes = sb.Length > 0 && (sb[0] == ' ' || sb[0] == '\t' || sb[^1] == ' ' || sb[^1] == '\t');
+        bool embedInQuotes =
+            sb.Length > 0 && (sb[0] == ' ' || sb[0] == '\t' || sb[^1] == ' ' || sb[^1] == '\t');
 
         // If we have not yet found a reason to embed in quotes
         if (!embedInQuotes)
@@ -64,7 +65,9 @@ public static class ExtensionMethods
     /// <returns>
     /// The pump configuration completed with the command line arguments.
     /// </returns>
-    public static PumpConfiguration ParseArguments(this PumpConfiguration configuration, string[] args)
+    public static PumpConfiguration ParseArguments(
+        this PumpConfiguration configuration,
+        string[] args)
     {
         foreach (string arg in args)
         {
@@ -97,8 +100,9 @@ public static class ExtensionMethods
                     configuration.FileType = FileType.XLSX;
                     configuration.OutputFile = arg;
                 }
-                else if (arg.Contains(".gdb", StringComparison.OrdinalIgnoreCase)
-                        || arg.Contains(".fdb", StringComparison.OrdinalIgnoreCase))
+                else if (
+                    arg.Contains(".gdb", StringComparison.OrdinalIgnoreCase)
+                    || arg.Contains(".fdb", StringComparison.OrdinalIgnoreCase))
                 {
                     // Firebird connection string
                     configuration.ConnectionString = arg;
@@ -119,7 +123,9 @@ public static class ExtensionMethods
             catch (Exception ex)
             {
                 // Ignore errors
-                if (ex is not (ArgumentException or ArgumentNullException or InvalidOperationException))
+                if (
+                    ex
+                    is not (ArgumentException or ArgumentNullException or InvalidOperationException))
                 {
                     throw;
                 }
@@ -137,11 +143,11 @@ public static class ExtensionMethods
     ///   <c>true</c> if the specified pump configuration is valid; otherwise, <c>false</c>.
     /// </returns>
     /// <remarks>Checks for empty values or an invalid SQL file.</remarks>
-    public static bool IsValid(this PumpConfiguration configuration)
-        => configuration.Database != Database.None
-            && !string.IsNullOrWhiteSpace(configuration.ConnectionString)
-            && configuration.FileType != FileType.None
-            && !string.IsNullOrWhiteSpace(configuration.OutputFile)
-            && !string.IsNullOrWhiteSpace(configuration.SqlFile)
-            && File.Exists(configuration.SqlFile);
+    public static bool IsValid(this PumpConfiguration configuration) =>
+        configuration.Database != Database.None
+        && !string.IsNullOrWhiteSpace(configuration.ConnectionString)
+        && configuration.FileType != FileType.None
+        && !string.IsNullOrWhiteSpace(configuration.OutputFile)
+        && !string.IsNullOrWhiteSpace(configuration.SqlFile)
+        && File.Exists(configuration.SqlFile);
 }

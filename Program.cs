@@ -26,7 +26,8 @@ public static class Program
     /// </returns>
     public static async Task<int> Main(string[] args)
     {
-        if (args.Length == 0
+        if (
+            args.Length == 0
             || args.FirstOrDefault() == "/?"
             || args.FirstOrDefault() == "-?"
             || args.FirstOrDefault()?.ToUpperInvariant() == "-H"
@@ -83,8 +84,12 @@ public static class Program
             attributes = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
             if (attributes.Length > 0)
             {
-                Version ver = new Version(((AssemblyFileVersionAttribute)attributes.First()).Version);
-                version = ver.Major.ToString(CultureInfo.InvariantCulture) + "." + ver.Minor.ToString(CultureInfo.InvariantCulture);
+                Version ver = new Version(
+                    ((AssemblyFileVersionAttribute)attributes.First()).Version);
+                version =
+                    ver.Major.ToString(CultureInfo.InvariantCulture)
+                    + "."
+                    + ver.Minor.ToString(CultureInfo.InvariantCulture);
                 if (ver.Build > 0)
                 {
                     version += "." + ver.Build.ToString(CultureInfo.InvariantCulture);

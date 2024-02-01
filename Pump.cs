@@ -14,7 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.Data.SqlClient;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;

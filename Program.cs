@@ -39,7 +39,7 @@ public static class Program
 
         // Parse the command line arguments
         PumpConfiguration configuration = new PumpConfiguration();
-        configuration.ParseArguments(args);
+        configuration = configuration.ParseArguments(args);
         if (configuration.IsValid())
         {
             try

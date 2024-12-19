@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="Program.cs" company="Conglomo">
-// Copyright 2019-2024 Conglomo Limited. Please see LICENSE for license details.
+// Copyright 2019-2025 Conglomo Limited. Please see LICENSE for license details.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -70,7 +70,7 @@ public static class Program
     private static void DisplayHelp()
     {
         Assembly? assembly = Assembly.GetEntryAssembly();
-        if (assembly == default)
+        if (assembly == null)
         {
             return;
         }

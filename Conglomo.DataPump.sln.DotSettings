@@ -4,4 +4,5 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=SQL/@EntryIndexedValue">SQL</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=SYLK/@EntryIndexedValue">SYLK</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=XLS/@EntryIndexedValue">XLS</s:String>
-	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=XLSX/@EntryIndexedValue">XLSX</s:String></wpf:ResourceDictionary>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=XLSX/@EntryIndexedValue">XLSX</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Conglomo/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

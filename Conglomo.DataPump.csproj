@@ -6,7 +6,7 @@
     <Company>Conglomo</Company>
     <Authors>Peter Chapman</Authors>
     <Product>DataPump</Product>
-    <Copyright>Copyright 2019-2025 Conglomo Limited. Please see LICENSE for license details.</Copyright>
+    <Copyright>Copyright 2019-2026 Conglomo Limited. Please see LICENSE for license details.</Copyright>
     <AssemblyName>DataPump</AssemblyName>
     <ApplicationIcon>Resources\GASPUMP.ICO</ApplicationIcon>
     <StartupObject>Conglomo.DataPump.Program</StartupObject>

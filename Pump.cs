@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="Pump.cs" company="Conglomo">
-// Copyright 2019-2025 Conglomo Limited. Please see LICENSE for license details.
+// Copyright 2019-2026 Conglomo Limited. Please see LICENSE for license details.
 // </copyright>
 // -----------------------------------------------------------------------
 
